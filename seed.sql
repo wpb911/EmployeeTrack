@@ -4,7 +4,7 @@ create table employee(
     id integer not null auto_increment,
     first_name varchar(30) not null,
     last_name varchar(30) not null,
-    role_id integer,
+    role_id integer not null,
     manager_id integer,
     primary key (id)
 );
@@ -13,7 +13,7 @@ create table role(
     id integer not null auto_increment,
     title varchar(30) not null,
     salary decimal not null,
-    department_id integer,
+    department_id integer not null,
     primary key (id)
 );
 
@@ -24,9 +24,9 @@ create table department(
 );
 
 create table manager(    
-    manager_id integer,    
+    manager_id integer not null,    
     managed_id integer,    
-    manager varchar(60)
+    manager varchar(60) not null
 );
 
 INSERT INTO employee (first_name, last_name, role_id)
@@ -48,5 +48,66 @@ INSERT INTO role (title, salary, department_id)
  
  INSERT INTO department (name)
  VALUES ("Sales"), ("Engineering"), ("Finance"), ("Legal");
+
+ --Query for View All Employees 
+
+select distinct first_name, last_name, role.title, department.name as "department", role.salary, manager.manager 
+from employee
+left join role on employee.role_id = role.id
+left join department on role.department_id = department.id
+left join manager on employee.manager_id = manager.manager_id;
+
+
+-- view all employees
+select distinct first_name, last_name, role.title, department.name as "department", role.salary, manager.manager 
+from employee
+left join role on employee.role_id = role.id
+left join department on role.department_id = department.id
+left join manager on employee.manager_id = manager.manager_id;
+
+-- View all employees by department 
+select distinct first_name, last_name, role.title, department.name as "department", role.salary, manager.manager 
+from employee
+left join role on employee.role_id = role.id
+left join department on role.department_id = department.id
+left join manager on employee.manager_id = manager.manager_id
+order by department;
+
+-- View all employees by manager
+select distinct first_name, last_name, role.title, department.name as "department", role.salary, manager.manager 
+from employee
+left join role on employee.role_id = role.id
+left join department on role.department_id = department.id
+left join manager on employee.manager_id = manager.manager_id
+order by manager;
+
+-- View Managers
+select distinct manager as Managers
+from manager  
+where manager is not null 
+order by manager;
  
+ -- View Departments
+ select name as Departments from department;
+
+ -- View Roles
+ select title as Roles from role;
+
+ -- View the total utilized budget of all departments
+select role.department_id, department.name as "department", sum(role.salary)
+from role
+left join department on role.department_id = department.id
+group by role.department_id;
+
+--View budget of a department 
+select role.department_id, department.name as "department", sum(role.salary)
+from role
+left join department on role.department_id = department.id
+where role.department_id = 2
+group by role.department_id;
+
+
+
+
+
  
