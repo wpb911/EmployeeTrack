@@ -1,4 +1,6 @@
-var mysql = require("mysql");
+require("console.table");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -10,7 +12,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "Eoto0902",
+  password: "mysqlroot",
   database: "employee_track"
 });
 
@@ -18,8 +20,8 @@ connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
   queryAllEmployees();
-  queryAllEmployeesByManager();
-  queryBudgetByDepartment();
+  // queryAllEmployeesByManager();
+  // queryBudgetByDepartment();
   //queryAllEmployeesByDepartment();
   //queryDanceSongs();
   
@@ -27,7 +29,15 @@ connection.connect(function(err) {
 });
 
 function queryAllEmployees() {
-  const query = connection.query("SELECT * FROM employee", function(err, res) {
+  let query = "select emp.first_name as First, emp.last_name as Last, role.title as Title, name as Department, salary as Salary, concat(mgr.first_name, ' ' , mgr.last_name) as Manager ";
+  query += "from employee emp "; 
+  query += "left join employee mgr on mgr.id = emp.manager_id ";
+  query += "left join role on emp.role_id = role.id ";
+  query += "left join department on role.department_id = department.id";
+
+  console.log(`Query string = "${query}"`);
+
+  connection.query(query, function(err, res) {
     if (err) throw err;
     // for (var i = 0; i < res.length; i++) {
     //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
@@ -35,7 +45,7 @@ function queryAllEmployees() {
     // console.log("-----------------------------------");
     
     // logs the actual query being run
-    console.log(query.sql);
+    //console.log(query);
     console.table(res);
   });
  
