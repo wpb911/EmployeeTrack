@@ -488,7 +488,7 @@ function viewEmployeesByManager() {
           }
           console.log(`chosen item: ${JSON.stringify(chosenItem)}`);
 
-          // determine if bid was high enough
+          //check if employee would be managing themselves and do not allow 
           if (parseInt(answer.manager_id) != parseInt(chosenItem.id)) {
 
             console.log(`chosenManager: ${parseInt(chosenItem.manager_id)} ChosenEmployee: ${parseInt(answer.manager_id)}`);
@@ -511,7 +511,7 @@ function viewEmployeesByManager() {
             );
           }
           else {
-            // bid wasn't high enough, so apologize and start over
+           
             console.log("Employee cannot manage themselves. Try again...");
             startMenu();
           }
@@ -519,4 +519,150 @@ function viewEmployeesByManager() {
     });
   }
 
+  function deleteEmployee() {
+    // query the database all employees
+    connection.query("SELECT * FROM employee", function(err, results) {
+      if (err) throw err;
+      // once you have the items, prompt the user for which they'd like to bid on
+      inquirer
+        .prompt([
+          {
+            name: "choice",
+            type: "rawlist",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < results.length; i++) {
+                let fullname = results[i].first_name + ' ' + results[i].last_name;
+                choiceArray.push(fullname);
+              }
+              return choiceArray;
+            },
+            message: "Which employee would you like to delete?"
+          }
+        ])
+        .then(function(answer) {
+          // get the information of the chosen item
+          var chosenItem;
+          for (var i = 0; i < results.length; i++) {
+            let fullname = results[i].first_name + ' ' + results[i].last_name;
+            if (fullname === answer.choice) {
+              chosenItem = results[i];
+            }
+          }
+          console.log(`chosen item: ${JSON.stringify(chosenItem)}`);               
+            
+          connection.query(
+            "delete from employee WHERE ?",
+            [
+              {
+                id: chosenItem.id
+              }
+            ],
+            function(error) {
+              if (error) throw err;
+              console.log("Employee deleted successfully!");
+              startMenu();
+            }
+          );                        
+        });
+    });
+  }
   
+
+  function deleteDepartment() {
+    // query the database all roles
+    connection.query("SELECT * FROM department", function(err, results) {
+      if (err) throw err;
+      // once you have the items, prompt the user for which they'd like to bid on
+      inquirer
+        .prompt([
+          {
+            name: "choice",
+            type: "rawlist",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < results.length; i++) {
+                
+                choiceArray.push(results[i].name);
+              }
+              return choiceArray;
+            },
+            message: "Which department would you like to delete?"
+          }
+        ])
+        .then(function(answer) {
+          // get the information of the chosen item
+          var chosenItem;
+          for (var i = 0; i < results.length; i++) {
+            
+            if (results[i].name === answer.choice) {
+              chosenItem = results[i];
+            }
+          }
+          console.log(`chosen item: ${JSON.stringify(chosenItem)}`);               
+            
+          connection.query(
+            "delete from department WHERE ?",
+            [
+              {
+                id: chosenItem.id
+              }
+            ],
+            function(error) {
+              if (error) throw err;
+              console.log("Department deleted successfully!");
+              startMenu();
+            }
+          );                        
+        });
+    });
+  }
+
+  function deleteRole() {
+    // query the database all roles
+    connection.query("SELECT * FROM role", function(err, results) {
+      if (err) throw err;
+      // once you have the items, prompt the user for which they'd like to bid on
+      inquirer
+        .prompt([
+          {
+            name: "choice",
+            type: "rawlist",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < results.length; i++) {
+                
+                choiceArray.push(results[i].title);
+              }
+              return choiceArray;
+            },
+            message: "Which role would you like to delete?"
+          }
+        ])
+        .then(function(answer) {
+          // get the information of the chosen item
+          var chosenItem;
+          for (var i = 0; i < results.length; i++) {
+            
+            if (results[i].title === answer.choice) {
+              chosenItem = results[i];
+            }
+          }
+          console.log(`chosen item: ${JSON.stringify(chosenItem)}`);               
+            
+          connection.query(
+            "delete from role WHERE ?",
+            [
+              {
+                id: chosenItem.id
+              }
+            ],
+            function(error) {
+              if (error) throw err;
+              console.log("Role deleted successfully!");
+              startMenu();
+            }
+          );                        
+        });
+    });
+  }
