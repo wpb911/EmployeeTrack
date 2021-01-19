@@ -19,23 +19,114 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
-  queryAllEmployees();
+  startMenu();
+  //queryAllEmployees();
   // queryAllEmployeesByManager();
   // queryBudgetByDepartment();
   //queryAllEmployeesByDepartment();
   //queryDanceSongs();
   
-  connection.end();
+  //connection.end();
 });
 
-function queryAllEmployees() {
-  let query = "select emp.first_name as First, emp.last_name as Last, role.title as Title, name as Department, salary as Salary, concat(mgr.first_name, ' ' , mgr.last_name) as Manager ";
+function startMenu() {
+  inquirer
+    .prompt({
+      
+      name: 'action',
+      type: "rawlist",
+      message: "What would you like to do?",
+      choices: [
+          'View All Employees',
+          'View Total Utilized budget By Department',
+          'Add Employee', 
+          "Remove Employee", 
+          "Add Employee Role", 
+          "Update Employee Role",
+          "Remove Employee Role",
+          "Add Employee Manager",
+          "Update Employee Manager",                    
+          "Remove Employee Manager",
+          "Add Employee Department",
+          "Update Employee Department",                    
+          "Remove Employee Department"
+          ]
+    })
+    .then(function(answer) {
+      switch (answer.action) {
+
+      case "View All Employees":
+        viewAllEmployees();        
+        break;
+
+      case "View Roles":
+        viewRoles();
+        startMenu()
+        break;
+
+      case "View Departments":
+        viewDepartments();
+        break;
+
+      case "View Total Utilized budget By Department":
+        viewBudget();
+        break;
+
+      case "Add Employee":
+        addEmployee();
+        break;
+
+      case "Remove Employee":
+        removeEmployee();
+        break;
+
+      case "Add Employee Role":
+        songSearch();
+        break;
+
+      case "Update Employee Role":
+        addRole();
+        break;
+
+      case "Remove Employee Role":
+        removeRole();
+        break;
+
+      case "Add Employee Manager":
+        addManager();
+        break;
+
+      case "Update Employee Manager":
+        updateManager();
+        break;
+
+      case "Delete Employee Manager":
+        removeManager();
+        break;
+        
+      case "Add Employee Department":
+        addDepartment()();
+        break;
+
+      case "Update Employee Department":
+       updateDepartment();
+        break;
+
+      case "Remove Employee Department":
+        removeDepartment();
+      break;
+    }
+    });
+}
+
+function viewAllEmployees() {
+  let query = "select emp.id as ID, emp.first_name as First, emp.last_name as Last, role.title as Title, name as Department, salary as Salary, concat(mgr.first_name, ' ' , mgr.last_name) as Manager ";
   query += "from employee emp "; 
   query += "left join employee mgr on mgr.id = emp.manager_id ";
   query += "left join role on emp.role_id = role.id ";
   query += "left join department on role.department_id = department.id";
 
-  console.log(`Query string = "${query}"`);
+  //console.log(`Query string = "${query}"`);
 
   connection.query(query, function(err, res) {
     if (err) throw err;
@@ -47,6 +138,7 @@ function queryAllEmployees() {
     // logs the actual query being run
     //console.log(query);
     console.table(res);
+    startMenu()
   });
  
 
@@ -66,8 +158,13 @@ function queryAllEmployeesByManager() {
    
   }
 
-  function queryBudgetByDepartment() {
-    const query = connection.query("select * from vdpart2", function(err, res) {
+  function viewBudget() {
+    let query = "select role.department_id as DepartmentID, department.name as Department, sum(role.salary) as Budget ";
+    query += "from role "; 
+    query += "inner join department on role.department_id = department.id ";
+    query += "group by role.department_id ";
+    
+    connection.query(query, function(err, res) {
       if (err) throw err;
       // for (var i = 0; i < res.length; i++) {
       //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
@@ -75,8 +172,9 @@ function queryAllEmployeesByManager() {
       // console.log("-----------------------------------");
       
       // logs the actual query being run
-      console.log(query.sql);
+      //console.log(query.sql);
       console.table(res);
+      startMenu()
     });
    
   }
