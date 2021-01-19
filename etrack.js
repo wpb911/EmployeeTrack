@@ -37,89 +37,87 @@ function startMenu() {
       type: "rawlist",
       message: "What would you like to do?",
       choices: [
-          'View All Employees',
-          'View Total Utilized budget By Department',
-          'Add Employee', 
-          "Remove Employee", 
-          "Add Employee Role", 
-          "Update Employee Role",
-          "Remove Employee Role",
-          "Add Employee Manager",
-          "Update Employee Manager",                    
-          "Remove Employee Manager",
-          "Add Employee Department",
-          "Update Employee Department",                    
-          "Remove Employee Department"
+          'View Employees',
+          'View Roles',
+          'View Departments',
+          "Add Role",
+          'Add Employee',
+          'Add Department',
+          "Update Role",         
+          "Update Manager",
+          "View Employees by Manager",
+          "Delete Department",
+          "Delete Role",
+          "Delete Employee",
+          'View Total Utilized budget By Department',         
           ]
     })
     .then(function(answer) {
       switch (answer.action) {
 
-      case "View All Employees":
-        viewAllEmployees();        
+      case "View Employees":
+        viewEmployees();        
         break;
 
       case "View Roles":
         viewRoles();
-        startMenu()
         break;
 
       case "View Departments":
         viewDepartments();
         break;
 
-      case "View Total Utilized budget By Department":
-        viewBudget();
+      case "Add Role":
+        addRole();
         break;
+
 
       case "Add Employee":
         addEmployee();
         break;
 
-      case "Remove Employee":
-        removeEmployee();
-        break;
-
-      case "Add Employee Role":
-        songSearch();
-        break;
-
-      case "Update Employee Role":
-        addRole();
-        break;
-
-      case "Remove Employee Role":
-        removeRole();
-        break;
-
-      case "Add Employee Manager":
-        addManager();
-        break;
-
-      case "Update Employee Manager":
-        updateManager();
-        break;
-
-      case "Delete Employee Manager":
-        removeManager();
-        break;
-        
-      case "Add Employee Department":
+      case "Add Department":
         addDepartment()();
         break;
 
-      case "Update Employee Department":
-       updateDepartment();
+      case "Update Role":
+        updateRole();
         break;
 
-      case "Remove Employee Department":
-        removeDepartment();
-      break;
+      case "Update Manager":
+        updateManager();
+        break;
+
+      case "View Employees by Manager":
+        viewEmployeesByManager();
+        break;
+
+      case "Delete Department":
+        deleteDepartment();
+        break;
+
+      case "Delete Role":
+        deleteRole();
+        break;
+
+      case "Delete Employee":
+        deleteEmployee();
+        break;
+      
+      case "View Total Utilized budget By Department":
+        viewBudgetByDepartment();
+        break;  
+        
+      case "exit":
+        connection.end();
+        break;
+      
     }
-    });
+
+  });
 }
 
-function viewAllEmployees() {
+function viewEmployees() {
   let query = "select emp.id as ID, emp.first_name as First, emp.last_name as Last, role.title as Title, name as Department, salary as Salary, concat(mgr.first_name, ' ' , mgr.last_name) as Manager ";
   query += "from employee emp "; 
   query += "left join employee mgr on mgr.id = emp.manager_id ";
@@ -143,23 +141,112 @@ function viewAllEmployees() {
  
 
 }
-function queryAllEmployeesByManager() {
-    const query = connection.query("select * from vepmbyman", function(err, res) {
-      if (err) throw err;
-      // for (var i = 0; i < res.length; i++) {
-      //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
-      // }
-      // console.log("-----------------------------------");
-      
-      // logs the actual query being run
-      console.log(query.sql);
-      console.table(res);
-    });
-   
-  }
+function viewRoles() {
+  let query = "select id as RoleID, title as Role from role ";
+  
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    // for (var i = 0; i < res.length; i++) {
+    //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
+    // }
+    // console.log("-----------------------------------");
+    
+    // logs the actual query being run
+    //console.log(query.sql);
+    console.table(res);
+    startMenu()
+  });
+ 
+}
 
-  function viewBudget() {
-    let query = "select role.department_id as DepartmentID, department.name as Department, sum(role.salary) as Budget ";
+function viewDepartments() {
+  let query = "select id as DepartmentID, name as Departments from department ";
+  
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    // for (var i = 0; i < res.length; i++) {
+    //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
+    // }
+    // console.log("-----------------------------------");
+    
+    // logs the actual query being run
+    //console.log(query.sql);
+    console.table(res);
+    startMenu()
+  });
+ 
+}
+
+function addRole() {
+
+
+  let query = "select id as DepartmentID, name as Departments from department ";
+  
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    // for (var i = 0; i < res.length; i++) {
+    //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
+    // }
+    // console.log("-----------------------------------");
+    
+    // logs the actual query being run
+    //console.log(query.sql);
+    console.table(res);
+    startMenu()
+  });
+ 
+}
+
+
+function addDepartment() {
+
+  
+  let query = "select id as DepartmentID, name as Departments from department ";
+  
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    // for (var i = 0; i < res.length; i++) {
+    //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
+    // }
+    // console.log("-----------------------------------");
+    
+    // logs the actual query being run
+    //console.log(query.sql);
+    console.table(res);
+    startMenu()
+  });
+ 
+}
+
+function viewEmployeesByManager() {
+  let query = "select concat(emp.first_name, ' ' , emp.last_name) as Employee, concat(mgr.first_name, ' ' , mgr.last_name) as Manager ";
+  query += "from employee emp "; 
+  query += "left join employee mgr on mgr.id = emp.manager_id ";
+  query += "left join role on emp.role_id = role.id ";
+  query += "left join department on role.department_id = department.id ";
+  query += "where emp.manager_id is not null "; 
+
+  //console.log(`Query string = "${query}"`);
+
+  connection.query(query, function(err, res) {
+    if (err) throw err;
+    // for (var i = 0; i < res.length; i++) {
+    //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
+    // }
+    // console.log("-----------------------------------");
+    
+    // logs the actual query being run
+    //console.log(query);
+    console.table(res);
+    startMenu()
+  });
+ 
+
+}
+  //View Roles
+
+  function viewBudgetByDepartment() {
+    let query = "select department.name as Department, sum(role.salary) as Budget ";
     query += "from role "; 
     query += "inner join department on role.department_id = department.id ";
     query += "group by role.department_id ";
@@ -179,62 +266,4 @@ function queryAllEmployeesByManager() {
    
   }
 
-function queryDanceSongs() {
-  var query = connection.query("SELECT * FROM songs WHERE genre=?", ["R&B"], function(err, res) {
-    if (err) throw err;
-    // for (var i = 0; i < res.length; i++) {
-    //   console.log(res[i].id + " | " + res[i].title + " | " + res[i].artist + " | " + res[i].genre);
-    // }
 
-    // logs the actual query being run
-    console.log(query.sql);
-    console.table(res);
-  });
-
-  // logs the actual query being run
-    
-}
-
-function mainSelection() {
-    return inquirer.prompt([
-        {
-            type: "list",
-            name: 'main',
-            message: "What would you like to do?",
-            choices: ['View All Employees',
-                     'View All Employees By Manager',
-                    'Add Employee', "Remove Employee", 
-                    "Update Employee Role", 
-                    "Update Employee Manager"]
-
-        },
-        {
-            type: "input",
-            name: 'title',
-            message: 'initial price (in dollars)',
-            when: isPosting
-
-        },
-        {
-            type: "input",
-            name: 'title',
-            when: isPosting
-
-        },
-        {
-            type: "input",
-            name: 'title',
-            when: isPosting
-
-        },
-        {
-            type: "input",
-            name: 'title',
-            when: isPosting
-
-        },
-
-
-
-    ])
-}
